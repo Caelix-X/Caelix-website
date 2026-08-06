@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caelix | Personal Space</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #030303;
+            --text: #ffffff;
+            --text-dim: #888888; 
+            --border: rgba(255, 255, 255, 0.12);
+            --transition-smooth: all 0.7s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        .noise {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            opacity: 0.04; pointer-events: none; z-index: 999;
+        }
+
+        .vignette {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, transparent 30%, rgba(0,0,0,0.9) 150%);
+            pointer-events: none; z-index: 10;
+        }
+
+        .glow {
+            position: fixed; width: 40vmax; height: 40vmax;
+            background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+            border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%);
+            z-index: 1; transition: transform 0.1s ease-out;
+        }
+
+        /* Hero Section */
+        .hero-wrapper {
+            position: relative; z-index: 20; height: 100vh;
+            display: flex; flex-direction: column; justify-content: space-between;
+            padding: 10vh 8vw; box-sizing: border-box;
+        }
+
+        /* 顶部导航精确对齐 */
+        .top-nav {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 11px; letter-spacing: 0.25em; color: var(--text-dim);
+            font-family: 'JetBrains Mono', monospace;
+            line-height: 1;
+        }
+
+        .nav-right {
+            display: flex; gap: 28px; align-items: center;
+        }
+
+        .nav-right a {
+            color: var(--text-dim); text-decoration: none; transition: color 0.3s;
+            line-height: 1; display: inline-block;
+        }
+        .nav-right a:hover { color: #fff; }
+
+        .hero {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.6rem, 4vw, 3.4rem);
+            line-height: 1.4;
+            max-width: 1000px;
+        }
+
+        .line-wrap { display: block; padding: 4px 0; cursor: default; }
+        .line-1 { display: inline-block; color: #fff; transition: var(--transition-smooth); }
+        .line-wrap:hover .line-1 { text-shadow: 0 0 30px rgba(255,255,255,0.4); transform: translateY(-2px); }
+        
+        /* 优化第二句静态下的延伸感与亮度 */
+        .line-2 { 
+            display: inline-block; 
+            font-style: italic; 
+            color: rgba(255, 255, 255, 0.45); 
+            letter-spacing: 0.08em; 
+            transition: var(--transition-smooth); 
+        }
+        .line-wrap:hover .line-2 { color: #ffffff; transform: translateX(12px); }
+
+        .footer { 
+            display: flex; 
+            justify-content: flex-end; 
+            align-items: flex-end; 
+        }
+
+        .cta-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .cmd-options {
+            display: none;
+            position: absolute;
+            bottom: calc(100% + 12px);
+            right: 0;
+            gap: 10px;
+            width: 420px;
+            max-width: 100%;
+            z-index: 30;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .cmd-options.active { display: flex; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .cmd-chip {
+            flex: 1;
+            background: rgba(15, 15, 15, 0.9);
+            border: 1px solid var(--border);
+            color: #ccc;
+            padding: 10px 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            backdrop-filter: blur(12px);
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            box-sizing: border-box;
+        }
+
+        .cmd-chip:hover {
+            background: #fff; color: #000; border-color: #fff;
+            box-shadow: 0 0 15px rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .cta-btn {
+            background: #fff; color: #000; 
+            height: 56px; width: 200px;
+            font-size: 12px; font-weight: 600; letter-spacing: 1.5px;
+            text-decoration: none; border: 1px solid #fff;
+            transition: var(--transition-smooth);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; box-sizing: border-box; overflow: hidden; white-space: nowrap; 
+            padding: 0 15px;
+        }
+
+        .cta-btn:hover:not(.terminal-mode) {
+            background: transparent; color: #fff; box-shadow: 0 0 30px rgba(255,255,255,0.1);
+        }
+
+        .cta-btn.expanded { width: 420px; max-width: 100%; }
+
+        .cta-btn.terminal-mode {
+            background: rgba(0,0,0,0.7); border-color: #444;
+            width: 420px; max-width: 100%; padding: 0 20px;
+            justify-content: flex-start; backdrop-filter: blur(8px); cursor: text;
+        }
+
+        .term-prefix {
+            display: none; font-family: 'JetBrains Mono', monospace;
+            color: #aaa; margin-right: 10px; font-size: 13px;
+        }
+        
+        .term-input {
+            display: none; background: transparent; border: none; color: #fff;
+            font-family: 'JetBrains Mono', monospace; font-size: 13px; outline: none;
+            flex: 1; min-width: 0; letter-spacing: 1px;
+        }
+
+        .term-input::placeholder { color: #555; font-style: italic; }
+
+        .cta-btn.terminal-mode .btn-text { display: none; }
+        .cta-btn.terminal-mode .term-prefix { display: block; }
+        .cta-btn.terminal-mode .term-input { display: block; }
+
+        /* Down-Page Sections */
+        .content-section {
+            position: relative; z-index: 20;
+            padding: 12vh 8vw;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* 去除代码注释式的标题，换为文学感人文优雅小标题 */
+        .section-header {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 1.2rem;
+            letter-spacing: 0.05em;
+            color: #aaa;
+            margin-bottom: 50px;
+        }
+
+        /* Projects Grid */
+        .projects-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .project-card {
+            background: rgba(12, 12, 12, 0.6);
+            border: 1px solid var(--border);
+            padding: 32px; backdrop-filter: blur(8px);
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            display: flex; flex-direction: column; justify-content: space-between;
+            min-height: 220px; text-decoration: none; color: var(--text);
+        }
+
+        .project-card:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .project-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px; color: #666; letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .project-title {
+            font-size: 20px; font-weight: 600; margin: 0 0 12px 0;
+            letter-spacing: -0.3px;
+        }
+
+        .project-desc {
+            font-size: 13px; color: var(--text-dim); line-height: 1.6;
+            margin: 0 0 24px 0; font-weight: 300;
+        }
+
+        .project-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px; color: #aaa; display: flex;
+            justify-content: space-between; align-items: center;
+        }
+
+        /* Writing List */
+        .writing-list { display: flex; flex-direction: column; }
+
+        .writing-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 24px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+            text-decoration: none; color: var(--text); transition: 0.3s;
+        }
+
+        .writing-item:hover { padding-left: 10px; border-bottom-color: rgba(255,255,255,0.2); }
+
+        .writing-title { font-size: 16px; font-weight: 400; color: #ddd; }
+        .writing-item:hover .writing-title { color: #fff; }
+
+        .writing-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px; color: var(--text-dim);
+        }
+
+        @media (max-width: 768px) {
+            .hero-wrapper { padding: 6vh 6vw; }
+            .hero { font-size: clamp(1.4rem, 5.5vw, 2.2rem); }
+            .footer { flex-direction: column; align-items: flex-start; gap: 20px; }
+            .cta-container { width: 100%; }
+            .cmd-options { width: 100%; gap: 6px; }
+            .cta-btn, .cta-btn.expanded, .cta-btn.terminal-mode { width: 100%; height: 50px; }
+            .writing-item { flex-direction: column; align-items: flex-start; gap: 8px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="noise"></div>
+    <div class="vignette"></div>
+    <div class="glow" id="glow"></div>
+    
+    <!-- Hero Section -->
+    <div class="hero-wrapper" id="contentWrapper">
+        <header class="top-nav">
+            <div>UTC // <span id="utc-time">00:00:00</span></div>
+            <nav class="nav-right">
+                <a href="#projects">PROJECTS</a>
+                <a href="#writing">WRITING</a>
+            </nav>
+        </header>
+
+        <div class="hero">
+            <div class="line-wrap"><span class="line-1">Hi, I am Caelix,</span></div>
+            <div class="line-wrap"><span class="line-2">a young man.</span></div>
+        </div>
+
+        <div class="footer">
+            <div class="cta-container">
+                <div class="cmd-options" id="cmd-options">
+                    <a class="cmd-chip" id="chip-email" href="javascript:void(0)" onclick="handleEmailClick(event)">[ Email ]</a>
+                    <a class="cmd-chip" id="chip-x" href="javascript:void(0)" onclick="handleXClick(event)">[ X ]</a>
+                    <a class="cmd-chip" href="https://github.com/Caelix-X" target="_blank" onclick="handleGithubClick(event)">[ GitHub ]</a>
+                </div>
+
+                <div class="cta-btn" id="cta">
+                    <span class="btn-text" id="cta-text">COLLABORATE</span>
+                    <span class="term-prefix" id="prefix">></span>
+                    <input type="text" class="term-input" id="term-input" autocomplete="off" spellcheck="false">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 1: Selected Works -->
+    <section class="content-section" id="projects">
+        <div class="section-header">Selected Works</div>
+        <div class="projects-grid">
+            <a href="https://github.com/Caelix-X" target="_blank" class="project-card">
+                <div>
+                    <div class="project-tag">EMBEDDED SYSTEMS / C</div>
+                    <h3 class="project-title">Embedded Microcontroller System</h3>
+                    <p class="project-desc">Hardware control & circuit analysis built with STM32 and C. Integrated with real-time signal logic.</p>
+                </div>
+                <div class="project-meta">
+                    <span>VIEW REPOSITORY</span>
+                    <span>→</span>
+                </div>
+            </a>
+
+            <a href="https://github.com/Caelix-X" target="_blank" class="project-card">
+                <div>
+                    <div class="project-tag">WEB FRONTEND / INTERACTION</div>
+                    <h3 class="project-title">Minimalist Terminal UI</h3>
+                    <p class="project-desc">Cyberpunk-inspired, command-driven personal portfolio interface featuring dynamic feedback & clipboard automation.</p>
+                </div>
+                <div class="project-meta">
+                    <span>VIEW SOURCE</span>
+                    <span>→</span>
+                </div>
+            </a>
+
+            <a href="https://github.com/Caelix-X" target="_blank" class="project-card">
+                <div>
+                    <div class="project-tag">DATABASE / INFRASTRUCTURE</div>
+                    <h3 class="project-title">Redis & SQL Storage Explorer</h3>
+                    <p class="project-desc">Performance profiling and structured schema exporter for key-value store and relational database workflows.</p>
+                </div>
+                <div class="project-meta">
+                    <span>EXPLORE LOGS</span>
+                    <span>→</span>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- Section 2: Reflections & Notes -->
+    <section class="content-section" id="writing">
+        <div class="section-header">Reflections & Notes</div>
+        <div class="writing-list">
+            <a href="javascript:void(0)" class="writing-item">
+                <span class="writing-title">Engineering Logic Out of Digital Chaos</span>
+                <span class="writing-meta">2026 // 04 MIN READ</span>
+            </a>
+            <a href="javascript:void(0)" class="writing-item">
+                <span class="writing-title">Why Low-Level Systems Shape Better High-Level Architecture</span>
+                <span class="writing-meta">2026 // 06 MIN READ</span>
+            </a>
+            <a href="javascript:void(0)" class="writing-item">
+                <span class="writing-title">Designing Micro-Interactions: From Noise to Physical Feedback</span>
+                <span class="writing-meta">2026 // 03 MIN READ</span>
+            </a>
+        </div>
+    </section>
+
+    <script>
+        const glow = document.getElementById('glow');
+        document.addEventListener('mousemove', (e) => {
+            glow.style.left = e.clientX + 'px';
+            glow.style.top = e.clientY + 'px';
+        });
+
+        function updateClock() {
+            const now = new Date();
+            const h = now.getUTCHours().toString().padStart(2, '0');
+            const m = now.getUTCMinutes().toString().padStart(2, '0');
+            const s = now.getUTCSeconds().toString().padStart(2, '0');
+            document.getElementById('utc-time').innerText = `${h}:${m}:${s}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        const content = {
+            cta: "COLLABORATE",
+            placeholderPrompt: "Try typing 'help' ...",
+            unknownCmd: "TRY TYPING 'HELP'",
+            sudoCmd: "PERMISSION DENIED: YOU ARE NOT CAELIX.",
+            emailResp: "EMAIL COPIED TO CLIPBOARD",
+            twitterResp: "X/TWITTER: [ COMING SOON ]",
+            githubResp: "OPENING GITHUB REPOSITORY...",
+            copied: "[ COPIED! ]",
+            comingSoon: "[ COMING SOON ]"
+        };
+
+        const cta = document.getElementById('cta');
+        const termInput = document.getElementById('term-input');
+        const ctaText = document.getElementById('cta-text');
+        const cmdOptions = document.getElementById('cmd-options');
+        const chipEmail = document.getElementById('chip-email');
+        const chipX = document.getElementById('chip-x');
+
+        let typingInterval = null;
+        let responseTimeout = null;
+        let lastCommand = "";
+
+        function startTypewriterPrompt() {
+            stopTypewriterPrompt();
+            const text = content.placeholderPrompt;
+            let i = 0;
+            termInput.placeholder = "";
+            typingInterval = setInterval(() => {
+                if (i < text.length) {
+                    termInput.placeholder += text.charAt(i);
+                    i++;
+                } else {
+                    clearInterval(typingInterval);
+                }
+            }, 100);
+        }
+
+        function stopTypewriterPrompt() {
+            if (typingInterval) clearInterval(typingInterval);
+            termInput.placeholder = "";
+        }
+
+        function showResponse(textKey) {
+            cmdOptions.classList.remove('active');
+            stopTypewriterPrompt();
+            cta.classList.remove('terminal-mode');
+            cta.classList.add('expanded');
+            ctaText.innerText = content[textKey];
+            termInput.value = '';
+
+            if (responseTimeout) clearTimeout(responseTimeout);
+            responseTimeout = setTimeout(() => {
+                cta.classList.remove('expanded');
+                ctaText.innerText = content.cta;
+            }, 3500);
+        }
+
+        function handleEmailClick(e) {
+            navigator.clipboard.writeText("blakesleyavina608@gmail.com");
+            const originalText = chipEmail.innerText;
+            chipEmail.innerText = content.copied;
+            showResponse("emailResp");
+            setTimeout(() => { chipEmail.innerText = originalText; }, 2000);
+        }
+
+        function handleXClick(e) {
+            const originalText = chipX.innerText;
+            chipX.innerText = content.comingSoon;
+            showResponse("twitterResp");
+            setTimeout(() => { chipX.innerText = originalText; }, 2000);
+        }
+
+        function handleGithubClick(e) {
+            showResponse("githubResp");
+        }
+
+        cta.addEventListener('click', (e) => {
+            if (!cta.classList.contains('terminal-mode')) {
+                cta.classList.remove('expanded');
+                cta.classList.add('terminal-mode');
+                startTypewriterPrompt();
+                setTimeout(() => termInput.focus(), 300);
+            }
+        });
+
+        termInput.addEventListener('input', () => {
+            if (termInput.value.length > 0) stopTypewriterPrompt();
+        });
+
+        termInput.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowUp') {
+                if (lastCommand) {
+                    e.preventDefault();
+                    termInput.value = lastCommand;
+                    stopTypewriterPrompt();
+                }
+            } else if (e.key === 'Enter') {
+                const rawVal = termInput.value.trim();
+                const lowerVal = rawVal.toLowerCase();
+
+                if (rawVal !== "") lastCommand = rawVal;
+
+                if (lowerVal.includes("sudo")) {
+                    showResponse("sudoCmd");
+                    return;
+                }
+
+                if (lowerVal === "help") {
+                    cmdOptions.classList.add('active');
+                    termInput.value = '';
+                    stopTypewriterPrompt();
+                    return;
+                }
+
+                if (lowerVal === "projects" || lowerVal === "project") {
+                    document.getElementById('projects').scrollIntoView({ behavior: 'smooth' });
+                    cta.classList.remove('terminal-mode');
+                    termInput.value = '';
+                    return;
+                }
+
+                if (lowerVal === "writing" || lowerVal === "essays") {
+                    document.getElementById('writing').scrollIntoView({ behavior: 'smooth' });
+                    cta.classList.remove('terminal-mode');
+                    termInput.value = '';
+                    return;
+                }
+
+                if (lowerVal === "email" || lowerVal === "mail") {
+                    navigator.clipboard.writeText("blakesleyavina608@gmail.com");
+                    showResponse("emailResp");
+                } else if (lowerVal === "twitter" || lowerVal === "x") {
+                    showResponse("twitterResp");
+                } else if (lowerVal === "github" || lowerVal === "git") {
+                    window.open("https://github.com/Caelix-X", "_blank");
+                    showResponse("githubResp");
+                } else {
+                    showResponse("unknownCmd");
+                }
+            }
+        });
+        
+        document.addEventListener('click', (e) => {
+            if (!cta.contains(e.target) && !cmdOptions.contains(e.target)) {
+                stopTypewriterPrompt();
+                cta.classList.remove('terminal-mode');
+                cmdOptions.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

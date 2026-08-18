@@ -4,15 +4,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-    <title>Caelix </title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <title>Caelix</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
+            /* 暗色模式变量 (默认) */
             --bg: #030303;
             --text: #ffffff;
-            --text-dim: #888888; 
+            --text-dim: #888888;
+            --text-sub: rgba(255, 255, 255, 0.45);
             --border: rgba(255, 255, 255, 0.12);
+            --border-light: rgba(255, 255, 255, 0.05);
+            --card-bg: rgba(12, 12, 12, 0.6);
+            --card-hover-border: rgba(255, 255, 255, 0.4);
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            --cta-bg: #ffffff;
+            --cta-text: #000000;
+            --chip-bg: rgba(15, 15, 15, 0.9);
+            --chip-text: #cccccc;
+            --chip-hover-bg: #ffffff;
+            --chip-hover-text: #000000;
+            --terminal-bg: rgba(0, 0, 0, 0.75);
+            --terminal-border: #444444;
+            --terminal-input-color: #ffffff;
+            --terminal-placeholder: #555555;
+            --vignette-bg: radial-gradient(circle, transparent 30%, rgba(0, 0, 0, 0.9) 150%);
+            --glow-color: rgba(255, 255, 255, 0.03);
+            --noise-opacity: 0.04;
+            --cursor-color: #ffffff;
+            --scale-tick: rgba(255, 255, 255, 0.25);
             --transition-smooth: all 0.7s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        /* 浅色模式变量 (纸质极简刊物风) */
+        body[data-theme="light"] {
+            --bg: #f7f7f8;
+            --text: #111111;
+            --text-dim: #71717a;
+            --text-sub: rgba(0, 0, 0, 0.55);
+            --border: rgba(0, 0, 0, 0.08);
+            --border-light: rgba(0, 0, 0, 0.06);
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-hover-border: rgba(0, 0, 0, 0.3);
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+            --cta-bg: #111111;
+            --cta-text: #ffffff;
+            --chip-bg: rgba(255, 255, 255, 0.92);
+            --chip-text: #27272a;
+            --chip-hover-bg: #111111;
+            --chip-hover-text: #ffffff;
+            --terminal-bg: rgba(255, 255, 255, 0.95);
+            --terminal-border: #d4d4d8;
+            --terminal-input-color: #111111;
+            --terminal-placeholder: #a1a1aa;
+            --vignette-bg: radial-gradient(circle, transparent 40%, rgba(0, 0, 0, 0.03) 150%);
+            --glow-color: rgba(0, 0, 0, 0.02);
+            --noise-opacity: 0.025;
+            --cursor-color: #111111;
+            --scale-tick: rgba(0, 0, 0, 0.2);
         }
 
         body, html {
@@ -21,72 +70,240 @@
             color: var(--text);
             font-family: 'Inter', sans-serif;
             scroll-behavior: smooth;
+            transition: background-color 0.4s ease, color 0.4s ease;
         }
 
         .noise {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-            opacity: 0.04; pointer-events: none; z-index: 999;
+            opacity: var(--noise-opacity); pointer-events: none; z-index: 999;
         }
 
         .vignette {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, transparent 30%, rgba(0,0,0,0.9) 150%);
+            background: var(--vignette-bg);
             pointer-events: none; z-index: 10;
         }
 
         .glow {
             position: fixed; width: 40vmax; height: 40vmax;
-            background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+            background: radial-gradient(circle, var(--glow-color) 0%, transparent 70%);
             border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%);
             z-index: 1; transition: transform 0.1s ease-out;
         }
 
-        /* Hero Section */
+        /* Hero 区域：保持严格的原本结构与间距 */
         .hero-wrapper {
-            position: relative; z-index: 20; height: 100vh;
+            position: relative; z-index: 20; min-height: 100vh;
+            min-height: 100dvh;
             display: flex; flex-direction: column; justify-content: space-between;
             padding: 10vh 8vw; box-sizing: border-box;
         }
 
-        /* 顶部导航精确对齐 */
+        /* 顶部精密仪表栏：严格对齐基准线，恢复舒展排版 */
         .top-nav {
-            display: flex; justify-content: space-between; align-items: center;
-            font-size: 11px; letter-spacing: 0.25em; color: var(--text-dim);
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            font-size: 11px; 
+            letter-spacing: 0.25em; 
+            color: var(--text-dim);
             font-family: 'JetBrains Mono', monospace;
             line-height: 1;
+            user-select: none;
         }
 
         .nav-right {
-            display: flex; gap: 28px; align-items: center;
+            display: flex; 
+            gap: 36px; 
+            align-items: center;
         }
 
         .nav-right a {
-            color: var(--text-dim); text-decoration: none; transition: color 0.3s;
-            line-height: 1; display: inline-block;
+            color: var(--text-dim); 
+            text-decoration: none; 
+            letter-spacing: 0.25em;
+            transition: color 0.3s;
+            line-height: 1; 
+            display: inline-flex;
+            align-items: center;
         }
-        .nav-right a:hover { color: #fff; }
+        .nav-right a:hover { color: var(--text); }
 
+        /* 晨昏分界游标组件 (Terminator Line) */
+        .terminator-widget {
+            display: inline-flex;
+            align-items: center;
+            gap: 14px;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+            margin: 0;
+        }
+
+        .clock-wrapper {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-dim);
+            transition: color 0.3s ease;
+        }
+
+        .status-dot {
+            width: 4px;
+            height: 4px;
+            background-color: var(--cursor-color);
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: pulseDot 2s infinite ease-in-out;
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { opacity: 0.25; transform: scale(0.85); }
+            50% { opacity: 1; transform: scale(1.15); }
+        }
+
+        .terminator-widget:hover .clock-wrapper {
+            color: var(--text);
+        }
+
+        .gauge-container {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .gauge-label {
+            font-size: 9px;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            color: var(--text-dim);
+            opacity: 0.45;
+            transition: all 0.3s ease;
+        }
+
+        .gauge-scale {
+            position: relative;
+            width: 24px;
+            height: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .gauge-scale::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 0; right: 0;
+            height: 1px;
+            background-color: var(--border);
+            transform: translateY(-50%);
+        }
+
+        .scale-mark {
+            width: 1px;
+            height: 4px;
+            background-color: var(--scale-tick);
+            z-index: 1;
+            transition: background-color 0.3s ease;
+        }
+
+        .gauge-cursor {
+            position: absolute;
+            left: 0;
+            width: 1.5px;
+            height: 10px;
+            background: var(--cursor-color);
+            z-index: 2;
+            transition: left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        background-color 0.3s ease,
+                        transform 0.2s ease;
+        }
+
+        .terminator-widget:hover .gauge-cursor {
+            transform: scaleY(1.2);
+        }
+
+        .terminator-widget:hover .scale-mark {
+            background-color: var(--text-dim);
+        }
+
+        /* 暗色激活状态 */
+        body:not([data-theme="light"]) .gauge-label.d-label {
+            opacity: 1;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        /* 浅色激活状态 */
+        body[data-theme="light"] .gauge-cursor {
+            left: 22.5px;
+        }
+
+        body[data-theme="light"] .gauge-label.l-label {
+            opacity: 1;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        body[data-theme="light"] .gauge-label.d-label {
+            opacity: 0.35;
+            font-weight: 400;
+        }
+
+        /* 原版标语排版参数：完全不修改视觉位置 */
         .hero {
             font-family: 'Playfair Display', serif;
-            font-size: clamp(1.6rem, 4vw, 3.4rem);
-            line-height: 1.4;
+            font-size: clamp(1.8rem, 4.5vw, 3.4rem);
+            line-height: 1.35;
             max-width: 1000px;
+            margin: 40px 0;
         }
 
-        .line-wrap { display: block; padding: 4px 0; cursor: default; }
-        .line-1 { display: inline-block; color: #fff; transition: var(--transition-smooth); }
-        .line-wrap:hover .line-1 { text-shadow: 0 0 30px rgba(255,255,255,0.4); transform: translateY(-2px); }
+        .line-wrap { 
+            display: block; 
+            padding: 4px 0; 
+            cursor: default; 
+            position: relative;
+        }
+
+        .line-1 { 
+            display: inline-block; 
+            color: var(--text); 
+            transition: var(--transition-smooth); 
+        }
+
+        .line-wrap:first-child:hover .line-1 { 
+            text-shadow: 0 0 30px var(--glow-color); 
+            transform: translateY(-2px); 
+        }
         
-        /* 优化第二句静态下的延伸感与亮度 */
+        /* 纯图层感应天线：零占位，不改变物理排版与间距 */
+        .sub-trigger::before {
+            content: '';
+            position: absolute;
+            top: -12px;
+            bottom: 0;
+            left: 0;
+            right: -80px;
+            z-index: 2;
+            cursor: default;
+        }
+
         .line-2 { 
             display: inline-block; 
             font-style: italic; 
-            color: rgba(255, 255, 255, 0.45); 
+            color: var(--text-sub); 
             letter-spacing: 0.08em; 
             transition: var(--transition-smooth); 
+            will-change: transform, color;
+            pointer-events: none;
         }
-        .line-wrap:hover .line-2 { color: #ffffff; transform: translateX(12px); }
+
+        .sub-trigger.is-active .line-2 { 
+            color: var(--text); 
+            transform: translateX(14px); 
+        }
 
         .footer { 
             display: flex; 
@@ -122,9 +339,9 @@
 
         .cmd-chip {
             flex: 1;
-            background: rgba(15, 15, 15, 0.9);
+            background: var(--chip-bg);
             border: 1px solid var(--border);
-            color: #ccc;
+            color: var(--chip-text);
             padding: 10px 0;
             font-family: 'JetBrains Mono', monospace;
             font-size: 11px;
@@ -133,21 +350,25 @@
             text-decoration: none;
             cursor: pointer;
             backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
             box-sizing: border-box;
         }
 
         .cmd-chip:hover {
-            background: #fff; color: #000; border-color: #fff;
-            box-shadow: 0 0 15px rgba(255,255,255,0.2);
+            background: var(--chip-hover-bg);
+            color: var(--chip-hover-text);
+            border-color: var(--chip-hover-bg);
+            box-shadow: 0 0 15px var(--glow-color);
             transform: translateY(-2px);
         }
 
         .cta-btn {
-            background: #fff; color: #000; 
+            background: var(--cta-bg); 
+            color: var(--cta-text); 
             height: 56px; width: 200px;
             font-size: 12px; font-weight: 600; letter-spacing: 1.5px;
-            text-decoration: none; border: 1px solid #fff;
+            text-decoration: none; border: 1px solid var(--cta-bg);
             transition: var(--transition-smooth);
             display: flex; align-items: center; justify-content: center;
             cursor: pointer; box-sizing: border-box; overflow: hidden; white-space: nowrap; 
@@ -155,29 +376,37 @@
         }
 
         .cta-btn:hover:not(.terminal-mode) {
-            background: transparent; color: #fff; box-shadow: 0 0 30px rgba(255,255,255,0.1);
+            background: transparent; 
+            color: var(--text); 
+            border-color: var(--text);
+            box-shadow: 0 0 30px var(--glow-color);
         }
 
         .cta-btn.expanded { width: 420px; max-width: 100%; }
 
         .cta-btn.terminal-mode {
-            background: rgba(0,0,0,0.7); border-color: #444;
+            background: var(--terminal-bg); 
+            border-color: var(--terminal-border);
             width: 420px; max-width: 100%; padding: 0 20px;
-            justify-content: flex-start; backdrop-filter: blur(8px); cursor: text;
+            justify-content: flex-start; 
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            cursor: text;
         }
 
         .term-prefix {
             display: none; font-family: 'JetBrains Mono', monospace;
-            color: #aaa; margin-right: 10px; font-size: 13px;
+            color: var(--text-dim); margin-right: 10px; font-size: 13px;
         }
         
         .term-input {
-            display: none; background: transparent; border: none; color: #fff;
+            display: none; background: transparent; border: none; 
+            color: var(--terminal-input-color);
             font-family: 'JetBrains Mono', monospace; font-size: 13px; outline: none;
             flex: 1; min-width: 0; letter-spacing: 1px;
         }
 
-        .term-input::placeholder { color: #555; font-style: italic; }
+        .term-input::placeholder { color: var(--terminal-placeholder); font-style: italic; }
 
         .cta-btn.terminal-mode .btn-text { display: none; }
         .cta-btn.terminal-mode .term-prefix { display: block; }
@@ -187,43 +416,46 @@
         .content-section {
             position: relative; z-index: 20;
             padding: 12vh 8vw;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid var(--border-light);
         }
 
-        /* 去除代码注释式的标题，换为文学感人文优雅小标题 */
         .section-header {
             font-family: 'Playfair Display', serif;
             font-style: italic;
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             letter-spacing: 0.05em;
-            color: #aaa;
+            color: var(--text-dim);
             margin-bottom: 50px;
         }
 
         /* Projects Grid */
         .projects-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 24px;
         }
 
         .project-card {
-            background: rgba(12, 12, 12, 0.6);
+            background: var(--card-bg);
             border: 1px solid var(--border);
-            padding: 32px; backdrop-filter: blur(8px);
+            padding: 32px; 
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
             display: flex; flex-direction: column; justify-content: space-between;
             min-height: 220px; text-decoration: none; color: var(--text);
+            box-sizing: border-box;
         }
 
         .project-card:hover {
-            border-color: rgba(255, 255, 255, 0.4);
+            border-color: var(--card-hover-border);
             transform: translateY(-4px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: var(--card-shadow);
         }
 
         .project-tag {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 10px; color: #666; letter-spacing: 1px;
+            font-size: 10px; color: var(--text-dim); letter-spacing: 1px;
             margin-bottom: 12px;
         }
 
@@ -233,13 +465,13 @@
         }
 
         .project-desc {
-            font-size: 13px; color: var(--text-dim); line-height: 1.6;
+            font-size: 13.5px; color: var(--text-dim); line-height: 1.6;
             margin: 0 0 24px 0; font-weight: 300;
         }
 
         .project-meta {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 11px; color: #aaa; display: flex;
+            font-size: 11px; color: var(--text-dim); display: flex;
             justify-content: space-between; align-items: center;
         }
 
@@ -248,32 +480,137 @@
 
         .writing-item {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 24px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
-            text-decoration: none; color: var(--text); transition: 0.3s;
+            padding: 24px 0; border-bottom: 1px solid var(--border-light);
+            text-decoration: none; color: var(--text); transition: all 0.3s ease;
         }
 
-        .writing-item:hover { padding-left: 10px; border-bottom-color: rgba(255,255,255,0.2); }
+        .writing-item:hover { 
+            padding-left: 10px; 
+            border-bottom-color: var(--border); 
+        }
 
-        .writing-title { font-size: 16px; font-weight: 400; color: #ddd; }
-        .writing-item:hover .writing-title { color: #fff; }
+        .writing-title { font-size: 16px; font-weight: 400; color: var(--text); }
+        .writing-item:hover .writing-title { color: var(--text); }
 
         .writing-meta {
             font-family: 'JetBrains Mono', monospace;
             font-size: 11px; color: var(--text-dim);
         }
 
+        /* 移动端适配 */
         @media (max-width: 768px) {
-            .hero-wrapper { padding: 6vh 6vw; }
-            .hero { font-size: clamp(1.4rem, 5.5vw, 2.2rem); }
-            .footer { flex-direction: column; align-items: flex-start; gap: 20px; }
-            .cta-container { width: 100%; }
-            .cmd-options { width: 100%; gap: 6px; }
-            .cta-btn, .cta-btn.expanded, .cta-btn.terminal-mode { width: 100%; height: 50px; }
-            .writing-item { flex-direction: column; align-items: flex-start; gap: 8px; }
+            .hero-wrapper { 
+                padding: 5vh 6vw 6vh; 
+                min-height: 100dvh;
+            }
+
+            .top-nav {
+                font-size: 10px;
+                letter-spacing: 0.15em;
+            }
+
+            .nav-right {
+                gap: 16px;
+            }
+
+            .nav-right a {
+                letter-spacing: 0.15em;
+            }
+
+            .hero { 
+                font-size: clamp(1.75rem, 8vw, 2.5rem); 
+                line-height: 1.3;
+                margin: 20px 0;
+            }
+
+            .sub-trigger::before {
+                display: none;
+            }
+
+            .footer { 
+                width: 100%; 
+                display: block; 
+            }
+
+            .cta-container { 
+                width: 100%; 
+            }
+
+            .cmd-options { 
+                width: 100%; 
+                gap: 8px; 
+                bottom: calc(100% + 10px);
+            }
+
+            .cmd-chip {
+                padding: 12px 0;
+                font-size: 10.5px;
+            }
+
+            .cta-btn, 
+            .cta-btn.expanded, 
+            .cta-btn.terminal-mode { 
+                width: 100%; 
+                height: 52px; 
+                box-sizing: border-box;
+                font-size: 11.5px;
+            }
+
+            .cta-btn.terminal-mode {
+                padding: 0 16px;
+            }
+
+            .term-input {
+                font-size: 12px;
+            }
+
+            .content-section {
+                padding: 9vh 6vw;
+            }
+
+            .section-header {
+                font-size: 1.15rem;
+                margin-bottom: 30px;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .project-card {
+                padding: 24px;
+                min-height: auto;
+            }
+
+            .project-title {
+                font-size: 18px;
+            }
+
+            .project-desc {
+                font-size: 13px;
+                margin-bottom: 20px;
+            }
+
+            .writing-item { 
+                flex-direction: column; 
+                align-items: flex-start; 
+                gap: 8px; 
+                padding: 18px 0;
+            }
+
+            .writing-title {
+                font-size: 15px;
+                line-height: 1.4;
+            }
+
+            .glow {
+                display: none;
+            }
         }
     </style>
 </head>
-<body>
+<body data-theme="dark">
 
     <div class="noise"></div>
     <div class="vignette"></div>
@@ -282,7 +619,23 @@
     <!-- Hero Section -->
     <div class="hero-wrapper" id="contentWrapper">
         <header class="top-nav">
-            <div>UTC // <span id="utc-time">00:00:00</span></div>
+            <div class="terminator-widget" id="terminatorSwitch" title="Toggle Theme (Dark / Light)">
+                <div class="clock-wrapper">
+                    <span class="status-dot"></span>
+                    <span>UTC // <span id="utc-time">00:00:00</span></span>
+                </div>
+                <div class="gauge-container">
+                    <span class="gauge-label d-label">D</span>
+                    <div class="gauge-scale">
+                        <span class="scale-mark"></span>
+                        <span class="scale-mark"></span>
+                        <span class="scale-mark"></span>
+                        <div class="gauge-cursor"></div>
+                    </div>
+                    <span class="gauge-label l-label">L</span>
+                </div>
+            </div>
+
             <nav class="nav-right">
                 <a href="#projects">PROJECTS</a>
                 <a href="#writing">WRITING</a>
@@ -291,7 +644,7 @@
 
         <div class="hero">
             <div class="line-wrap"><span class="line-1">Hi, I am Caelix,</span></div>
-            <div class="line-wrap"><span class="line-2">a young man.</span></div>
+            <div class="line-wrap sub-trigger" id="subTrigger"><span class="line-2">a young man.</span></div>
         </div>
 
         <div class="footer">
@@ -374,9 +727,44 @@
 
     <script>
         const glow = document.getElementById('glow');
-        document.addEventListener('mousemove', (e) => {
-            glow.style.left = e.clientX + 'px';
-            glow.style.top = e.clientY + 'px';
+        
+        if (window.matchMedia('(hover: hover)').matches) {
+            document.addEventListener('mousemove', (e) => {
+                glow.style.left = e.clientX + 'px';
+                glow.style.top = e.clientY + 'px';
+            });
+        }
+
+        // 晨昏线主题切换与偏好持久化
+        const terminatorSwitch = document.getElementById('terminatorSwitch');
+        const savedTheme = localStorage.getItem('theme');
+
+        if (savedTheme) {
+            document.body.setAttribute('data-theme', savedTheme);
+        } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+            document.body.setAttribute('data-theme', 'light');
+        }
+
+        terminatorSwitch.addEventListener('click', () => {
+            const currentTheme = document.body.getAttribute('data-theme');
+            const targetTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.body.setAttribute('data-theme', targetTheme);
+            localStorage.setItem('theme', targetTheme);
+        });
+
+        // 意图微控制器：保留速度感与感应防抖
+        const subTrigger = document.getElementById('subTrigger');
+        let hoverTimer = null;
+
+        subTrigger.addEventListener('mouseenter', () => {
+            hoverTimer = setTimeout(() => {
+                subTrigger.classList.add('is-active');
+            }, 35);
+        });
+
+        subTrigger.addEventListener('mouseleave', () => {
+            clearTimeout(hoverTimer);
+            subTrigger.classList.remove('is-active');
         });
 
         function updateClock() {

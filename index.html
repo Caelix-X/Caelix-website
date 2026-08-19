@@ -6,6 +6,11 @@
     <link rel="icon" type="image/svg+xml" href="./favicon.svg">
     <title>Caelix</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        // 在 DOM 解析前即时计算并注入系统主题，消除首屏白/黑闪烁
+        const isSystemLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+        document.documentElement.setAttribute('data-theme', isSystemLight ? 'light' : 'dark');
+    </script>
     <style>
         :root {
             /* 暗色模式变量 (默认) */
@@ -37,7 +42,7 @@
         }
 
         /* 浅色模式变量 (纸质极简刊物风) */
-        body[data-theme="light"] {
+        html[data-theme="light"] {
             --bg: #f7f7f8;
             --text: #111111;
             --text-dim: #71717a;
@@ -92,7 +97,7 @@
             z-index: 1; transition: transform 0.1s ease-out;
         }
 
-        /* Hero 区域：保持严格的原本结构与间距 */
+        /* Hero 区域 */
         .hero-wrapper {
             position: relative; z-index: 20; min-height: 100vh;
             min-height: 100dvh;
@@ -100,7 +105,7 @@
             padding: 10vh 8vw; box-sizing: border-box;
         }
 
-        /* 顶部精密仪表栏：严格对齐基准线，恢复舒展排版 */
+        /* 顶部精密仪表栏 */
         .top-nav {
             display: flex; 
             justify-content: space-between; 
@@ -229,29 +234,34 @@
         }
 
         /* 暗色激活状态 */
-        body:not([data-theme="light"]) .gauge-label.d-label {
+        html[data-theme="dark"] .gauge-label.d-label {
             opacity: 1;
             color: var(--text);
             font-weight: 600;
         }
 
-        /* 浅色激活状态 */
-        body[data-theme="light"] .gauge-cursor {
-            left: 22.5px;
-        }
-
-        body[data-theme="light"] .gauge-label.l-label {
-            opacity: 1;
-            color: var(--text);
-            font-weight: 600;
-        }
-
-        body[data-theme="light"] .gauge-label.d-label {
+        html[data-theme="dark"] .gauge-label.l-label {
             opacity: 0.35;
             font-weight: 400;
         }
 
-        /* 原版标语排版参数：完全不修改视觉位置 */
+        /* 浅色激活状态 */
+        html[data-theme="light"] .gauge-cursor {
+            left: 22.5px;
+        }
+
+        html[data-theme="light"] .gauge-label.l-label {
+            opacity: 1;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        html[data-theme="light"] .gauge-label.d-label {
+            opacity: 0.35;
+            font-weight: 400;
+        }
+
+        /* 标语排版参数 */
         .hero {
             font-family: 'Playfair Display', serif;
             font-size: clamp(1.8rem, 4.5vw, 3.4rem);
@@ -278,7 +288,7 @@
             transform: translateY(-2px); 
         }
         
-        /* 纯图层感应天线：零占位，不改变物理排版与间距 */
+        /* 纯图层感应天线 */
         .sub-trigger::before {
             content: '';
             position: absolute;
@@ -610,7 +620,7 @@
         }
     </style>
 </head>
-<body data-theme="dark">
+<body>
 
     <div class="noise"></div>
     <div class="vignette"></div>
@@ -735,24 +745,23 @@
             });
         }
 
-        // 晨昏线主题切换与偏好持久化
+        // 策略 A：纯净系统自适应与临时会话切换（不存 localStorage）
         const terminatorSwitch = document.getElementById('terminatorSwitch');
-        const savedTheme = localStorage.getItem('theme');
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: light)');
 
-        if (savedTheme) {
-            document.body.setAttribute('data-theme', savedTheme);
-        } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-            document.body.setAttribute('data-theme', 'light');
-        }
-
-        terminatorSwitch.addEventListener('click', () => {
-            const currentTheme = document.body.getAttribute('data-theme');
-            const targetTheme = currentTheme === 'light' ? 'dark' : 'light';
-            document.body.setAttribute('data-theme', targetTheme);
-            localStorage.setItem('theme', targetTheme);
+        // 实时系统外观监听：系统变色瞬间网页联动变色
+        mediaQuery.addEventListener('change', (e) => {
+            document.documentElement.setAttribute('data-theme', e.matches ? 'light' : 'dark');
         });
 
-        // 意图微控制器：保留速度感与感应防抖
+        // 手动游标切换：仅影响当前浏览会话，刷新后继续优先跟随系统
+        terminatorSwitch.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const targetTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', targetTheme);
+        });
+
+        // 意图微控制器
         const subTrigger = document.getElementById('subTrigger');
         let hoverTimer = null;
 

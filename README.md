@@ -51,10 +51,10 @@ Designed for seamless deployment on static edge hosting platforms like **Vercel*
 
 ```bash
 # Clone the repository
-git clone https://github.com/Caelix-X/portfolio.git
+git clone https://github.com/Caelix-X/Caelix-website.git
 
 # Navigate to project directory
-cd portfolio
+cd Caelix-website
 
 # Local preview via standard HTTP server
 npx serve .

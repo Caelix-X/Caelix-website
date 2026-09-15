@@ -17,7 +17,7 @@
             --bg: #030303;
             --text: #ffffff;
             --text-dim: #888888;
-            --text-sub: rgba(255, 255, 255, 0.62);
+            --text-sub: rgba(255, 255, 255, 0.45);
             --border: rgba(255, 255, 255, 0.12);
             --border-light: rgba(255, 255, 255, 0.05);
             --card-bg: rgba(12, 12, 12, 0.6);
@@ -45,8 +45,8 @@
         html[data-theme="light"] {
             --bg: #f7f7f8;
             --text: #111111;
-            --text-dim: #5a5a5f;
-            --text-sub: rgba(0, 0, 0, 0.62);
+            --text-dim: #71717a;
+            --text-sub: rgba(0, 0, 0, 0.55);
             --border: rgba(0, 0, 0, 0.08);
             --border-light: rgba(0, 0, 0, 0.06);
             --card-bg: rgba(255, 255, 255, 0.85);
@@ -671,9 +671,16 @@
             line-height: inherit;
         }
 
-        :focus-visible {
+        :focus-visible:not(.term-input) {
             outline: 2px solid var(--text);
             outline-offset: 3px;
+        }
+
+        /* The terminal input never shows the generic focus ring: it would draw a
+           white box inside the pill. The visible caret marks the focus instead. */
+        .term-input:focus,
+        .term-input:focus-visible {
+            outline: none;
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -731,7 +738,7 @@
                 <div class="cmd-options" id="cmd-options">
                     <button type="button" class="cmd-chip" id="chip-email" onclick="handleEmailClick(event)">[ Email ]</button>
                     <button type="button" class="cmd-chip" id="chip-x" onclick="handleXClick(event)">[ X ]</button>
-                    <a class="cmd-chip" href="https://github.com/Caelix-X" target="_blank" rel="noopener noreferrer" onclick="handleGithubClick(event)">[ GitHub ]</a>
+                    <a class="cmd-chip" href="https://github.com/Caelix-X" target="_blank" onclick="handleGithubClick(event)">[ GitHub ]</a>
                 </div>
 
                 <div class="cta-btn" id="cta" role="group" aria-label="Collaborate terminal">
@@ -747,7 +754,7 @@
     <section class="content-section" id="projects">
         <div class="section-header">Selected Works</div>
         <div class="projects-grid">
-            <a href="https://github.com/Caelix-X" target="_blank" rel="noopener noreferrer" class="project-card">
+            <a href="https://github.com/Caelix-X" target="_blank" class="project-card">
                 <div>
                     <div class="project-tag">EMBEDDED SYSTEMS / C</div>
                     <h3 class="project-title">Embedded Microcontroller System</h3>
@@ -759,7 +766,7 @@
                 </div>
             </a>
 
-            <a href="https://github.com/Caelix-X" target="_blank" rel="noopener noreferrer" class="project-card">
+            <a href="https://github.com/Caelix-X" target="_blank" class="project-card">
                 <div>
                     <div class="project-tag">WEB FRONTEND / INTERACTION</div>
                     <h3 class="project-title">Minimalist Terminal UI</h3>
@@ -771,7 +778,7 @@
                 </div>
             </a>
 
-            <a href="https://github.com/Caelix-X" target="_blank" rel="noopener noreferrer" class="project-card">
+            <a href="https://github.com/Caelix-X" target="_blank" class="project-card">
                 <div>
                     <div class="project-tag">DATABASE / INFRASTRUCTURE</div>
                     <h3 class="project-title">Redis & SQL Storage Explorer</h3>

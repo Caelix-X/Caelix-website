@@ -17,7 +17,7 @@
             --bg: #030303;
             --text: #ffffff;
             --text-dim: #888888;
-            --text-sub: rgba(255, 255, 255, 0.45);
+            --text-sub: rgba(255, 255, 255, 0.62);
             --border: rgba(255, 255, 255, 0.12);
             --border-light: rgba(255, 255, 255, 0.05);
             --card-bg: rgba(12, 12, 12, 0.6);
@@ -45,8 +45,8 @@
         html[data-theme="light"] {
             --bg: #f7f7f8;
             --text: #111111;
-            --text-dim: #71717a;
-            --text-sub: rgba(0, 0, 0, 0.55);
+            --text-dim: #5a5a5f;
+            --text-sub: rgba(0, 0, 0, 0.62);
             --border: rgba(0, 0, 0, 0.08);
             --border-light: rgba(0, 0, 0, 0.06);
             --card-bg: rgba(255, 255, 255, 0.85);
@@ -618,18 +618,87 @@
                 display: none;
             }
         }
+
+        /* ---------- Accessibility ---------- */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .skip-link {
+            position: absolute;
+            top: 8px;
+            left: 16px;
+            z-index: 200;
+            transform: translateY(-200%);
+            background: var(--text);
+            color: var(--bg);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 10px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: transform 0.2s ease;
+        }
+
+        .skip-link:focus {
+            transform: translateY(0);
+        }
+
+        /* Buttons that replaced decorative spans/anchors keep the original look */
+        button.btn-text {
+            background: none;
+            border: 0;
+            padding: 0;
+            margin: 0;
+            font: inherit;
+            letter-spacing: inherit;
+            color: inherit;
+            cursor: pointer;
+        }
+
+        button.cmd-chip {
+            font-weight: inherit;
+            line-height: inherit;
+        }
+
+        :focus-visible {
+            outline: 2px solid var(--text);
+            outline-offset: 3px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <div class="noise"></div>
-    <div class="vignette"></div>
-    <div class="glow" id="glow"></div>
+    <a class="skip-link" href="#projects">Skip to content</a>
+    <div class="noise" aria-hidden="true"></div>
+    <div class="vignette" aria-hidden="true"></div>
+    <div class="glow" id="glow" aria-hidden="true"></div>
     
     <!-- Hero Section -->
     <div class="hero-wrapper" id="contentWrapper">
         <header class="top-nav">
-            <div class="terminator-widget" id="terminatorSwitch" title="Toggle Theme (Dark / Light)">
+            <div class="terminator-widget" id="terminatorSwitch" role="button" tabindex="0" aria-label="Toggle colour theme, currently dark" title="Toggle Theme (Dark / Light)">
                 <div class="clock-wrapper">
                     <span class="status-dot"></span>
                     <span>UTC // <span id="utc-time">00:00:00</span></span>
@@ -646,7 +715,7 @@
                 </div>
             </div>
 
-            <nav class="nav-right">
+            <nav class="nav-right" aria-label="Primary">
                 <a href="#projects">PROJECTS</a>
                 <a href="#writing">WRITING</a>
             </nav>
@@ -660,15 +729,15 @@
         <div class="footer">
             <div class="cta-container">
                 <div class="cmd-options" id="cmd-options">
-                    <a class="cmd-chip" id="chip-email" href="javascript:void(0)" onclick="handleEmailClick(event)">[ Email ]</a>
-                    <a class="cmd-chip" id="chip-x" href="javascript:void(0)" onclick="handleXClick(event)">[ X ]</a>
-                    <a class="cmd-chip" href="https://github.com/Caelix-X" target="_blank" onclick="handleGithubClick(event)">[ GitHub ]</a>
+                    <button type="button" class="cmd-chip" id="chip-email" onclick="handleEmailClick(event)">[ Email ]</button>
+                    <button type="button" class="cmd-chip" id="chip-x" onclick="handleXClick(event)">[ X ]</button>
+                    <a class="cmd-chip" href="https://github.com/Caelix-X" target="_blank" rel="noopener noreferrer" onclick="handleGithubClick(event)">[ GitHub ]</a>
                 </div>
 
-                <div class="cta-btn" id="cta">
-                    <span class="btn-text" id="cta-text">COLLABORATE</span>
-                    <span class="term-prefix" id="prefix">></span>
-                    <input type="text" class="term-input" id="term-input" autocomplete="off" spellcheck="false">
+                <div class="cta-btn" id="cta" role="group" aria-label="Collaborate terminal">
+                    <button type="button" class="btn-text" id="cta-text" aria-haspopup="true" aria-expanded="false" aria-controls="term-input">COLLABORATE</button>
+                    <span class="term-prefix" id="prefix" aria-hidden="true">></span>
+                    <input type="text" class="term-input" id="term-input" autocomplete="off" spellcheck="false" aria-label="Type a command, for example help">
                 </div>
             </div>
         </div>
@@ -678,7 +747,7 @@
     <section class="content-section" id="projects">
         <div class="section-header">Selected Works</div>
         <div class="projects-grid">
-            <a href="https://github.com/Caelix-X" target="_blank" class="project-card">
+            <a href="https://github.com/Caelix-X" target="_blank" rel="noopener noreferrer" class="project-card">
                 <div>
                     <div class="project-tag">EMBEDDED SYSTEMS / C</div>
                     <h3 class="project-title">Embedded Microcontroller System</h3>
@@ -690,7 +759,7 @@
                 </div>
             </a>
 
-            <a href="https://github.com/Caelix-X" target="_blank" class="project-card">
+            <a href="https://github.com/Caelix-X" target="_blank" rel="noopener noreferrer" class="project-card">
                 <div>
                     <div class="project-tag">WEB FRONTEND / INTERACTION</div>
                     <h3 class="project-title">Minimalist Terminal UI</h3>
@@ -702,7 +771,7 @@
                 </div>
             </a>
 
-            <a href="https://github.com/Caelix-X" target="_blank" class="project-card">
+            <a href="https://github.com/Caelix-X" target="_blank" rel="noopener noreferrer" class="project-card">
                 <div>
                     <div class="project-tag">DATABASE / INFRASTRUCTURE</div>
                     <h3 class="project-title">Redis & SQL Storage Explorer</h3>
@@ -720,20 +789,22 @@
     <section class="content-section" id="writing">
         <div class="section-header">Reflections & Notes</div>
         <div class="writing-list">
-            <a href="javascript:void(0)" class="writing-item">
+            <div class="writing-item">
                 <span class="writing-title">Engineering Logic Out of Digital Chaos</span>
                 <span class="writing-meta">2026 // 04 MIN READ</span>
-            </a>
-            <a href="javascript:void(0)" class="writing-item">
+            </div>
+            <div class="writing-item">
                 <span class="writing-title">Why Low-Level Systems Shape Better High-Level Architecture</span>
                 <span class="writing-meta">2026 // 06 MIN READ</span>
-            </a>
-            <a href="javascript:void(0)" class="writing-item">
+            </div>
+            <div class="writing-item">
                 <span class="writing-title">Designing Micro-Interactions: From Noise to Physical Feedback</span>
                 <span class="writing-meta">2026 // 03 MIN READ</span>
-            </a>
+            </div>
         </div>
     </section>
+
+    <div class="sr-only" role="status" aria-live="polite" id="sr-status"></div>
 
     <script>
         const glow = document.getElementById('glow');
@@ -804,6 +875,7 @@
         const cmdOptions = document.getElementById('cmd-options');
         const chipEmail = document.getElementById('chip-email');
         const chipX = document.getElementById('chip-x');
+        const srStatus = document.getElementById('sr-status');
 
         let typingInterval = null;
         let responseTimeout = null;
@@ -836,6 +908,8 @@
             cta.classList.add('expanded');
             ctaText.innerText = content[textKey];
             termInput.value = '';
+            srStatus.innerText = content[textKey];
+            ctaText.setAttribute('aria-expanded', 'false');
 
             if (responseTimeout) clearTimeout(responseTimeout);
             responseTimeout = setTimeout(() => {
@@ -863,11 +937,29 @@
             showResponse("githubResp");
         }
 
+        // 无障碍：主题切换按钮的键盘操作与状态朗读
+        function syncThemeLabel() {
+            const current = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+            terminatorSwitch.setAttribute('aria-label', 'Toggle colour theme, currently ' + current);
+        }
+
+        terminatorSwitch.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                terminatorSwitch.click();
+            }
+        });
+        terminatorSwitch.addEventListener('click', syncThemeLabel);
+        mediaQuery.addEventListener('change', syncThemeLabel);
+        syncThemeLabel();
+
         cta.addEventListener('click', (e) => {
             if (!cta.classList.contains('terminal-mode')) {
                 cta.classList.remove('expanded');
                 cta.classList.add('terminal-mode');
+                ctaText.setAttribute('aria-expanded', 'true');
                 startTypewriterPrompt();
+                srStatus.innerText = 'Terminal ready. Type help for available commands.';
                 setTimeout(() => termInput.focus(), 300);
             }
         });
@@ -877,6 +969,16 @@
         });
 
         termInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                stopTypewriterPrompt();
+                cta.classList.remove('terminal-mode');
+                cmdOptions.classList.remove('active');
+                ctaText.setAttribute('aria-expanded', 'false');
+                termInput.blur();
+                ctaText.focus();
+                return;
+            }
             if (e.key === 'ArrowUp') {
                 if (lastCommand) {
                     e.preventDefault();
@@ -896,12 +998,14 @@
 
                 if (lowerVal === "help") {
                     cmdOptions.classList.add('active');
+                    srStatus.innerText = 'Quick actions available: Email, X, GitHub.';
                     termInput.value = '';
                     stopTypewriterPrompt();
                     return;
                 }
 
                 if (lowerVal === "projects" || lowerVal === "project") {
+                    srStatus.innerText = 'Scrolled to Selected Works.';
                     document.getElementById('projects').scrollIntoView({ behavior: 'smooth' });
                     cta.classList.remove('terminal-mode');
                     termInput.value = '';
@@ -909,6 +1013,7 @@
                 }
 
                 if (lowerVal === "writing" || lowerVal === "essays") {
+                    srStatus.innerText = 'Scrolled to Reflections and Notes.';
                     document.getElementById('writing').scrollIntoView({ behavior: 'smooth' });
                     cta.classList.remove('terminal-mode');
                     termInput.value = '';
@@ -934,6 +1039,7 @@
                 stopTypewriterPrompt();
                 cta.classList.remove('terminal-mode');
                 cmdOptions.classList.remove('active');
+                ctaText.setAttribute('aria-expanded', 'false');
             }
         });
     </script>
